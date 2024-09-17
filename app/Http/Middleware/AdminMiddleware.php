@@ -13,6 +13,6 @@ class AdminMiddleware
             return $next($request);
         }
 
-        return redirect('/');
+        return redirect('/')->with('error', 'Access denied. Only administrators can access this page.');
     }
 }

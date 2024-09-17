@@ -29,4 +29,9 @@ class User extends Authenticatable
     {
         return strtolower($this->role->name) === strtolower($roleName);
     }
+    public function isAdmin()
+    {
+        return strtolower($this->role->name) === 'admin';
+    }
+    
 }
