@@ -86,7 +86,7 @@ L’objectif de ce projet est de créer une plateforme web interne permettant au
    php artisan db:seed  
    php artisan serve
 
-   `donner de connexion(login):
+   `connexion Credentials (login):
    
    idEmployé : A123456  ,
 
