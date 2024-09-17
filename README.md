@@ -83,7 +83,19 @@ L’objectif de ce projet est de créer une plateforme web interne permettant au
    npm install
    php artisan key:generate
    php artisan migrate
+   php artisan db:seed  
    php artisan serve
+
+   `donner de connexion(login):
+   
+   idEmployé : A123456  ,
+
+   Email : Mohamedhaki70@gmail.com  ,
+
+   Password : adminpassword   ,
+   
+   
+   `
 
 Utilisation
 Accéder à l'application via http://localhost:8000.
