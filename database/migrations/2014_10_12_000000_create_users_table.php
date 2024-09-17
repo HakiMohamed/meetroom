@@ -13,10 +13,10 @@ class CreateUsersTable extends Migration
             $table->string('firstname');
             $table->string('lastname');
             $table->string('email')->unique();
-            $table->string('EmployeId')->unique();
+            $table->string('employeId')->unique();
             $table->string('password');
-            $table->foreignId('RoleId')->constrained('roles')->onDelete('cascade');
-            $table->timestamps(); 
+            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\ReunionsRoom;
-use Illuminate\Http\Request;
 
 class ReunionsRoomController extends Controller
 {
@@ -11,6 +10,7 @@ class ReunionsRoomController extends Controller
     public function index()
     {
         $rooms = ReunionsRoom::all();
+
         return view('rooms.index', compact('rooms'));
     }
 

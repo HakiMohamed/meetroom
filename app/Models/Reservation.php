@@ -1,31 +1,33 @@
-<?php 
+<?php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Notification;
-use App\Notifications\MeetingReminder;
+use Illuminate\Support\Carbon;
+
 
 class Reservation extends Model
 {
     protected $fillable = [
-        'RoomId', 'UserId', 'meeting_type', 'platform', 
-        'start_time', 'end_time', 'subject', 'participants', 'status'
+        'room_id', 'user_id', 'meeting_type', 'platform',
+        'start_time', 'end_time', 'subject', 'participants', 'status',
     ];
 
     protected $dates = ['start_time', 'end_time'];
 
     public function room()
     {
-        return $this->belongsTo(ReunionsRoom::class, 'RoomId');
+        return $this->belongsTo(ReunionsRoom::class, 'room_id');
     }
+    
+
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'UserId');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function equipements()
+    public function equipments()
     {
         return $this->belongsToMany(Equipement::class, 'reservation_equipement');
     }
@@ -49,17 +51,4 @@ class Reservation extends Model
     {
         return $this->getDurationAttribute() > 120;
     }
-
-    public function sendMeetingReminder()
-    {
-        // Convert the participants string to an array if it's a comma-separated list
-        $participants = explode(',', $this->participants);
-        
-        // Send notification to each participant
-        foreach ($participants as $email) {
-            Notification::route('mail', trim($email))
-                ->notify(new MeetingReminder($this));
-        }
-    }
 }
-

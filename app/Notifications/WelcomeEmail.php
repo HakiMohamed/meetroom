@@ -2,8 +2,8 @@
 
 namespace App\Notifications;
 
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class WelcomeEmail extends Notification
 {
@@ -23,7 +23,7 @@ class WelcomeEmail extends Notification
     {
         return (new MailMessage)
             ->subject('Welcome to Our Platform!')
-            ->greeting('Hello ' . $this->user->firstname . '!')
+            ->greeting('Hello '.$this->user->firstname.'!')
             ->line('Thank you for registering with us.')
             ->action('Visit Dashboard', url('/'))
             ->line('Thank you for using our application!');

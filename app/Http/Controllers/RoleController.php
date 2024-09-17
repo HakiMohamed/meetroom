@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Role;
+use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
@@ -29,6 +29,7 @@ class RoleController extends Controller
     public function index()
     {
         $roles = Role::all();
+
         return view('roles.index', compact('roles'));
     }
 
@@ -48,7 +49,7 @@ class RoleController extends Controller
     public function update(Request $request, Role $role)
     {
         $request->validate([
-            'name' => 'required|string|unique:roles,name,' . $role->id,
+            'name' => 'required|string|unique:roles,name,'.$role->id,
         ]);
 
         $role->update($request->all());
@@ -60,6 +61,7 @@ class RoleController extends Controller
     public function destroy(Role $role)
     {
         $role->delete();
+
         return redirect()->route('roles.index')->with('status', 'Role deleted successfully!');
     }
 }

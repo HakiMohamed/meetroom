@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Equipement extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['name','description'];
 
     public function reservations()
     {
@@ -18,7 +18,7 @@ class Equipement extends Model
         return $this->reservations()
             ->where(function ($query) use ($startTime, $endTime) {
                 $query->where('start_time', '<', $endTime)
-                      ->where('end_time', '>', $startTime);
+                    ->where('end_time', '>', $startTime);
             })->exists();
     }
 }

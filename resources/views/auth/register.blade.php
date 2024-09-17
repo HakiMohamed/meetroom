@@ -74,15 +74,15 @@
     <main class="pt-24 w-full flex items-center justify-center">
         <div class="w-1/2 p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl transition duration-500 ease-in-out transform hover:scale-105">
             
-            <a href="/" class="block text-center mt-8 text-blue-900 dark:text-white text-3xl font-bold tracking-wide group">
+            <a href="/" class="block text-center     text-blue-900 dark:text-white text-3xl font-bold tracking-wide group">
                 Room <span class="text-blue-400">Meet</span>
                 <span class="absolute left-0 bottom-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-300 scale-x-0 group-hover:scale-x-100 transform transition-transform duration-300 origin-left"></span>
             </a>
 
-            <h1 class="text-xl  mt-10 font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl mb-6 animate-fadeIn">
+            <h1 class="text-xl   font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl mb-6 animate-fadeIn">
                 Create an account
             </h1>
-            <form class="space-y-6" method="POST" action="{{ route('register') }}">
+            <form class="space-y-1" method="POST" action="{{ route('register') }}">
                 @csrf
                 @method('POST')
         
@@ -115,8 +115,8 @@
         
                 <!-- Employee ID -->
                 <div>
-                    <label for="id_employe" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Employee ID</label>
-                    <input type="text" name="id_employe" id="id_employe"
+                    <label for="employeId" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Employee ID</label>
+                    <input type="text" name="employeId" id="employeId"
                         class="bg-gray-50 border border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white text-sm rounded-lg block w-full p-3 focus:ring-blue-500 focus:border-blue-500 transition ease-in-out duration-300 transform hover:scale-105"
                         required>
                 </div>

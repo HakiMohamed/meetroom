@@ -4,12 +4,12 @@
 
 @section('content')
 <div class="container mx-auto p-6">
-    <h1 class="text-3xl font-semibold text-gray-900">Create Role</h1>
+    <h1 class="text-3xl font-semibold text-white">Create Role</h1>
     <form action="{{ route('roles.store') }}" method="POST" class="mt-6 bg-white p-8 rounded-lg shadow-md border border-gray-200">
         @csrf
         <div>
             <label for="name" class="block text-sm font-medium text-gray-700">Role Name</label>
-            <input type="text" name="name" id="name" value="{{ old('name') }}" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
+            <input type="text" name="name" id="name" value="{{ old('name') }}" class="mt-1 p-3 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200" required>
             @error('name')
                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
             @enderror

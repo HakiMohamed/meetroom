@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Equipement;
+use Illuminate\Http\Request;
 
 class EquipmentController extends Controller
 {
@@ -29,7 +29,8 @@ class EquipmentController extends Controller
     // Affiche tous les équipements
     public function index()
     {
-        $equipments = Equipement::all();
+        $equipments = Equipement::paginate(10);
+
         return view('equipments.index', compact('equipments'));
     }
 
@@ -62,6 +63,7 @@ class EquipmentController extends Controller
     public function destroy(Equipement $equipment)
     {
         $equipment->delete();
+
         return redirect()->route('equipments.index')->with('status', 'Equipment deleted successfully!');
     }
 }

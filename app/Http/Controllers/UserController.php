@@ -2,97 +2,133 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
+use Brevo\Client\Api\TransactionalEmailsApi;
+use Brevo\Client\Configuration;
+use Brevo\Client\Model\SendSmtpEmail;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\UserCreated;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    // Affiche le formulaire de création d'utilisateur
-    public function create()
-    {
-        $roles = Role::all();
-        return view('users.create', compact('roles'));
-    }
-
-    // Enregistre un nouvel utilisateur
-    public function store(Request $request)
-    {
-        $request->validate([
-            'firstname' => 'required|string',
-            'lastname' => 'required|string',
-            'email' => 'required|email|unique:users,email',
-            'EmployeId' => 'required|string|unique:users,EmployeId',
-            'password' => 'required|string|confirmed',
-            'role_id' => 'required|exists:roles,id',
-        ]);
-
-        $user = User::create([
-            'firstname' => $request->input('firstname'),
-            'lastname' => $request->input('lastname'),
-            'email' => $request->input('email'),
-            'EmployeId' => $request->input('EmployeId'),
-            'password' => Hash::make($request->input('password')),
-            'role_id' => $request->input('role_id'),
-        ]);
-
-        // Send email with credentials
-        Mail::to($user->email)->send(new UserCreated($user, $request->input('password')));
-
-        return redirect()->route('users.index')->with('status', 'User created successfully!');
-    }
-
-    // Affiche tous les utilisateurs
+    // Display a list of users
     public function index()
     {
-        $users = User::all();
+        $users = User::with('role')->paginate(10);
+
         return view('users.index', compact('users'));
     }
 
-    // Affiche les détails d'un utilisateur
-    public function show(User $user)
+    // Show the form to create a new user
+    public function create()
     {
-        return view('users.show', compact('user'));
+        $roles = Role::all(); // Fetch roles for assignment
+
+        return view('users.create', compact('roles'));
     }
 
-    // Affiche le formulaire d'édition d'utilisateur
+    // Store a new user in the database
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'employeId' => 'required|string|unique:users,employeId|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+            'role_id' => 'required|exists:roles,id', // Ensure role exists
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $user = User::create([
+            'firstname' => $request->firstname,
+            'lastname' => $request->lastname,
+            'employeId' => $request->employeId,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role_id' => $request->role_id, // Assign role
+        ]);
+
+        $config = Configuration::getDefaultConfiguration()
+            ->setApiKey('api-key', env('MAIL_PASSWORD'));
+
+        $emailApi = new TransactionalEmailsApi(
+            new \GuzzleHttp\Client,
+            $config
+        );
+
+        $email = new SendSmtpEmail([
+            'to' => [['email' => $user->email]],
+            'subject' => 'Welcome to Our Platform!',
+            'htmlContent' => '<p>Hello '.$user->firstname.$user->lastname.',</p>'.
+                             '<p>Welcome to our platform! Here are your credentials:</p>'.
+                             '<p><strong>Employee ID:</strong> '.$user->employeId.'</p>'.
+                             '<p><strong>Email:</strong> '.$user->email.'</p>'.
+                             '<p><strong>Password:</strong> '.$request->password.'</p>'.
+                             '<p>Thank you for joining us!</p>',
+            'sender' => ['email' => env('MAIL_FROM_ADDRESS'), 'name' => env('MAIL_FROM_NAME')],
+        ]);
+
+        try {
+            $response = $emailApi->sendTransacEmail($email);
+            Auth::login($user);
+
+            return redirect()->route('users.index')->with('success', 'Account created successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to send welcome email. Error: '.$e->getMessage());
+
+            return back()->with('error', 'Failed to send welcome email. Please try again.'.$e->getMessage());
+        }
+
+    }
+
+    // Show the form for editing a user
     public function edit(User $user)
     {
-        $roles = Role::all();
+        $roles = Role::all(); // Fetch roles for assignment
+
         return view('users.edit', compact('user', 'roles'));
     }
 
-    // Met à jour un utilisateur
+    // Update a user in the database
     public function update(Request $request, User $user)
     {
-        $request->validate([
-            'firstname' => 'required|string',
-            'lastname' => 'required|string',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'EmployeId' => 'required|string|unique:users,EmployeId,' . $user->id,
-            'password' => 'nullable|string|confirmed',
-            'role_id' => 'required|exists:roles,id',
+        $validator = Validator::make($request->all(), [
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'employeId' => 'required|string|max:255|unique:users,employeId,'.$user->id,
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
+            'password' => 'nullable|string|min:8|confirmed',
+            'role_id' => 'required|exists:roles,id', // Ensure role exists
         ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
 
         $user->update([
-            'firstname' => $request->input('firstname'),
-            'lastname' => $request->input('lastname'),
-            'email' => $request->input('email'),
-            'EmployeId' => $request->input('EmployeId'),
-            'password' => $request->filled('password') ? Hash::make($request->input('password')) : $user->password,
-            'role_id' => $request->input('role_id'),
+            'firstname' => $request->firstname,
+            'lastname' => $request->lastname,
+            'employeId' => $request->employeId,
+            'email' => $request->email,
+            'password' => $request->password ? Hash::make($request->password) : $user->password,
+            'role_id' => $request->role_id, // Assign role
         ]);
 
-        return redirect()->route('users.index')->with('status', 'User updated successfully!');
+        return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
-    // Supprime un utilisateur
+    // Remove a user from the database
     public function destroy(User $user)
     {
         $user->delete();
-        return redirect()->route('users.index')->with('status', 'User deleted successfully!');
+
+        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
 }

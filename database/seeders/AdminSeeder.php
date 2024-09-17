@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class AdminSeeder extends Seeder
 {
@@ -16,18 +15,14 @@ class AdminSeeder extends Seeder
         $employeeRole = Role::where('name', 'employe')->first();
 
         // Crée un compte admin
-        $admin = User::create([
+        User::create([
             'firstname' => 'Mohamed',
             'lastname' => 'Haki',
-            'id_employe' => 'A123456',
+            'employeId' => 'A123456',
             'email' => 'MohamedHaki70@gmail.com',
-            'password' => Hash::make('adminpassword'),
+            'role_id' => $adminRole->id,
+            'password' => bcrypt('adminpassword'),
         ]);
 
-        // Assigner le rôle 'admin'
-        $admin->roles()->attach($adminRole);
-
-        
-        
     }
 }

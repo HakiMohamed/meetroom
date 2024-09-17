@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\ReunionsRoom;
+use Illuminate\Http\Request;
 
 class RoomController extends Controller
 {
@@ -30,7 +30,8 @@ class RoomController extends Controller
     // Affiche toutes les salles
     public function index()
     {
-        $rooms = ReunionsRoom::all();
+        $rooms = ReunionsRoom::paginate(10);
+
         return view('rooms.index', compact('rooms'));
     }
 
@@ -64,6 +65,7 @@ class RoomController extends Controller
     public function destroy(ReunionsRoom $room)
     {
         $room->delete();
+
         return redirect()->route('rooms.index')->with('status', 'Room deleted successfully!');
     }
 }

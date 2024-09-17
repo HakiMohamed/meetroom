@@ -5,7 +5,7 @@
 @section('content')
 <div class="container mx-auto p-6">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-semibold text-gray-900">Roles</h1>
+        <h1 class="text-3xl font-semibold text-white">Roles</h1>
         <a href="{{ route('roles.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700">Add Role</a>
     </div>
     <div class="bg-white shadow-md rounded-lg overflow-hidden">

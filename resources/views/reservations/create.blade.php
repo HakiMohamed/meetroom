@@ -1,67 +1,152 @@
 @extends('layouts.app')
 
-@section('title', 'Add New Reservation')
-
 @section('content')
+
 <div class="container mx-auto p-6">
-    <div class="bg-white shadow-md rounded-lg p-6">
-        <h1 class="text-2xl font-semibold text-gray-900 mb-4">Add New Reservation</h1>
-        <form action="{{ route('reservations.store') }}" method="POST">
-            @csrf
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="room_id" class="block text-sm font-medium text-gray-700">Room</label>
-                    <select id="room_id" name="room_id" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
-                        <option value="">Select Room</option>
-                        @foreach($rooms as $room)
+    <h1 class="text-3xl font-semibold mb-6 text-white dark:text-white">Create Reservation</h1>
+    <form action="{{ route('reservations.store') }}" method="POST" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+        @csrf
+
+        <ul class="list-disc pl-5 text-red-500">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Room Selection -->
+            <div class="mb-4">
+                <label for="room_id" class="block text-gray-700 dark:text-gray-300 font-medium">Room</label>
+                <select id="room_id" name="room_id" class="mt-1 p-3 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200" required>
+                    <option value="">Select a room</option>
+                    @foreach($rooms as $room)
                         <option value="{{ $room->id }}">{{ $room->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('room_id')
-                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div>
-                    <label for="user_id" class="block text-sm font-medium text-gray-700">User</label>
-                    <select id="user_id" name="user_id" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
-                        <option value="">Select User</option>
-                        @foreach($users as $user)
-                        <option value="{{ $user->id }}">{{ $user->firstname }} {{ $user->lastname }}</option>
-                        @endforeach
-                    </select>
-                    @error('user_id')
-                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div>
-                    <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
-                    <select id="type" name="type" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
-                        <option value="virtual">Virtual</option>
-                        <option value="in_person">In-Person</option>
-                    </select>
-                    @error('type')
-                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div class="md:col-span-2">
-                    <label for="date" class="block text-sm font-medium text-gray-700">Date and Time</label>
-                    <input type="datetime-local" id="date" name="date" value="{{ old('date') }}" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
-                    @error('date')
-                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div class="md:col-span-2">
-                    <label for="equipment" class="block text-sm font-medium text-gray-700">Equipment Needed (if any)</label>
-                    <textarea id="equipment" name="equipment" rows="3" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">{{ old('equipment') }}</textarea>
-                    @error('equipment')
-                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
+                    @endforeach
+                </select>
+                @error('room_id')
+                    <div class="text-red-500 mt-1 text-sm">{{ $message }}</div>
+                @enderror
             </div>
-            <div class="mt-6 flex justify-end">
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700">Add Reservation</button>
+
+            <!-- Meeting Type -->
+            <div class="mb-4">
+                <label for="meeting_type" class="block text-gray-700 dark:text-gray-300 font-medium">Meeting Type</label>
+                <select id="meeting_type" name="meeting_type" class="mt-1 p-3 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200" required>
+                    <option value="virtual">Virtual</option>
+                    <option value="in-person">In-person</option>
+                </select>
+                @error('meeting_type')
+                    <div class="text-red-500 mt-1 text-sm">{{ $message }}</div>
+                @enderror
             </div>
-        </form>
-    </div>
+
+            <!-- Platform -->
+            <div class="mb-4">
+                <label for="platform" class="block text-gray-700 dark:text-gray-300 font-medium">Platform (optional)</label>
+                <input type="text" id="platform" name="platform" class="mt-1 p-3 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200">
+                @error('platform')
+                    <div class="text-red-500 mt-1 text-sm">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <!-- Subject -->
+            <div class="mb-4">
+                <label for="subject" class="block text-gray-700 dark:text-gray-300 font-medium">Subject (optional)</label>
+                <input type="text" id="subject" name="subject" class="mt-1 p-3 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200">
+                @error('subject')
+                    <div class="text-red-500 mt-1 text-sm">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <!-- Start Time -->
+            <div class="mb-4">
+                <label for="start_time" class="block text-gray-700 dark:text-gray-300 font-medium">Start Time</label>
+                <input type="datetime-local" id="start_time" name="start_time" class="mt-1 p-3 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200" required>
+                @error('start_time')
+                    <div class="text-red-500 mt-1 text-sm">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <!-- End Time -->
+            <div class="mb-4">
+                <label for="end_time" class="block text-gray-700 dark:text-gray-300 font-medium">End Time</label>
+                <input type="datetime-local" id="end_time" name="end_time" class="mt-1 p-3 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200" required>
+                @error('end_time')
+                    <div class="text-red-500 mt-1 text-sm">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <!-- Participants -->
+            <div class="mb-4">
+                <label for="participants" class="block text-gray-700 dark:text-gray-300 font-medium">Participants (Enter emails separated by commas)</label>
+                <div id="participant-container" class="flex flex-wrap gap-2 p-2 border border-gray-300 dark:border-gray-600 rounded-md"></div>
+                <input type="text" id="participants-input" class="mt-1 p-3 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200" placeholder="Enter participant emails separated by commas...">
+                <input type="hidden" id="participants" name="participants">
+                @error('participants')
+                    <div class="text-red-500 mt-1 text-sm">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <!-- Equipment Selection -->
+            <div class="mb-4">
+                <label for="equipments" class="block text-gray-700 dark:text-gray-300 font-medium">Select Equipment (optional)</label>
+                <select id="equipments" name="equipments[]" multiple class="mt-1 p-3 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200">
+                    @foreach($equipments as $equipment)
+                        <option value="{{ $equipment->id }}">{{ $equipment->name }}</option>
+                    @endforeach
+                </select>
+                @error('equipments')
+                    <div class="text-red-500 mt-1 text-sm">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+
+        <div class="flex justify-end mt-6">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out">
+                Create Reservation
+            </button>
+        </div>
+    </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const participantsInput = document.getElementById('participants-input');
+        const participantContainer = document.getElementById('participant-container');
+        const hiddenParticipantsInput = document.getElementById('participants');
+
+        function addTags(emails) {
+            participantContainer.innerHTML = ''; // Clear current tags
+            emails.forEach(email => {
+                if (email) {
+                    const tag = document.createElement('div');
+                    tag.className = 'bg-blue-200 text-blue-800 rounded-md px-2 py-1 flex items-center gap-2';
+                    tag.innerHTML = `
+                        <span>${email}</span>
+                        <button type="button" class="text-blue-500" onclick="this.parentElement.remove()">x</button>
+                    `;
+                    participantContainer.appendChild(tag);
+                }
+            });
+            // Update hidden input
+            hiddenParticipantsInput.value = emails.join(',');
+        }
+
+        function processEmails(input) {
+            const emails = input.split(',').map(email => email.trim()).filter(email => email);
+            return emails;
+        }
+
+        participantsInput.addEventListener('input', function () {
+            const emails = processEmails(participantsInput.value);
+            addTags(emails);
+        });
+
+        document.querySelector('form').addEventListener('submit', function () {
+            const emails = processEmails(participantsInput.value);
+            hiddenParticipantsInput.value = emails.join(',');
+        });
+    });
+</script>
+
 @endsection

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Mail;
 
@@ -20,10 +20,10 @@ class NewUserCredentials extends Mailable
     public function build()
     {
         return $this->view('emails.new_user_credentials')
-                    ->with([
-                        'name' => $this->user->name,
-                        'email' => $this->user->email,
-                        'password' => request()->password, // Or another way to pass the password
-                    ]);
+            ->with([
+                'name' => $this->user->name,
+                'email' => $this->user->email,
+                'password' => request()->password, // Or another way to pass the password
+            ]);
     }
 }
