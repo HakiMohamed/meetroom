@@ -180,4 +180,88 @@ class ReservationController extends Controller
                 ->delay(now()->addSeconds(30 * ($index + 1)));
         }
     }
+
+
+
+
+   
+
+
+
+
+    public function update(Request $request, Reservation $reservation)
+{
+    // Check if the authenticated user is either the creator or an admin
+    if (Auth::id() !== $reservation->user_id && !Auth::user()->isAdmin()) {
+        return redirect()->route('reservations.index')->with('error', 'You are not authorized to update this reservation.');
+    }
+
+    // Validate the form inputs
+    $validator = Validator::make($request->all(), [
+        'room_id' => 'required|exists:reunions_rooms,id',
+        'meeting_type' => 'required|in:virtual,in-person',
+        'platform' => 'nullable|string',
+        'start_time' => 'required|date|after:now',
+        'end_time' => 'required|date|after:start_time',
+        'subject' => 'nullable|string',
+        'participants' => 'nullable|string', // Ensure participants is a string
+        'equipments' => 'nullable|array',
+        'equipments.*' => 'exists:equipements,id',
+    ]);
+
+    if ($validator->fails()) {
+        return back()->withErrors($validator)->withInput();
+    }
+
+    // Check room availability
+    $room = ReunionsRoom::find($request->room_id);
+    if ($room->reservations()->where(function ($query) use ($request, $reservation) {
+        $query->where('start_time', '<', $request->end_time)
+              ->where('end_time', '>', $request->start_time)
+              ->where('id', '!=', $reservation->id);
+    })->exists()) {
+        return back()->withErrors(['room_id' => 'The selected room is not available during the selected time.']);
+    }
+
+    // Split and validate participants
+    $participants = array_filter(array_map('trim', explode(',', $request->participants)));
+
+    // Check equipment availability
+    $equipments = Equipement::find($request->equipments ?? []);
+    $unavailableEquipments = [];
+    foreach ($equipments as $equipment) {
+        if ($equipment->isReserved($request->start_time, $request->end_time)) {
+            $unavailableEquipments[] = $equipment->name;
+        }
+    }
+
+    if (!empty($unavailableEquipments)) {
+        $unavailableEquipmentsList = implode(', ', $unavailableEquipments);
+        return back()->withErrors(['equipments' => "The following equipment(s) are not available: $unavailableEquipmentsList."]);
+    }
+
+    // Update reservation
+    $reservation->update([
+        'room_id' => $request->room_id,
+        'meeting_type' => $request->meeting_type,
+        'platform' => $request->platform,
+        'start_time' => $request->start_time,
+        'end_time' => $request->end_time,
+        'subject' => $request->subject,
+        'participants' => json_encode($participants), // Save as JSON
+    ]);
+
+    // Sync equipment
+    $reservation->equipments()->sync($request->equipments ?? []);
+
+    // Optionally, send updated reservation email notifications here
+    // $this->sendEmails($reservation, $participants);
+
+    return redirect()->route('reservations.index')->with('success', 'Reservation updated successfully.');
+}
+
+    
+
+
+    
 }
