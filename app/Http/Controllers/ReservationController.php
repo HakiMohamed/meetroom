@@ -78,7 +78,7 @@ class ReservationController extends Controller
         $reservation->status = "cancelled";
         $reservation->save();
     
-        return redirect()->route('reservations.index')->with('success', 'Reservation cancelled successfully.');
+        return redirect()->back()->with('success', 'Reservation cancelled successfully.');
     }
     
 
@@ -165,7 +165,7 @@ class ReservationController extends Controller
         // Send emails
         $this->sendEmails($reservation, $participants);
 
-        return redirect()->route('reservations.index')->with('success', 'Reservation created successfully.');
+        return redirect()->back()->with('success', 'Reservation created successfully.');
     }
 
     public function sendEmails(Reservation $reservation, array $participants)

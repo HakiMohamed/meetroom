@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
@@ -55,7 +56,6 @@ Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.e
 Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update')->middleware('admin');
 Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy')->middleware('admin');
 
-// Role routes
 Route::get('/roles', [RoleController::class, 'index'])->name('roles.index')->middleware('admin');
 Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create')->middleware('admin');
 Route::post('/roles', [RoleController::class, 'store'])->name('roles.store')->middleware('admin');
@@ -64,8 +64,6 @@ Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.e
 Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update')->middleware('admin');
 Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy')->middleware('admin');
 
-// Dashboard route
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('admin');
 
-// User-specific reservations
 Route::get('/user-reservations', [ReservationController::class, 'userReservations'])->name('reservations.user');

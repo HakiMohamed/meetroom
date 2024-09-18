@@ -40,7 +40,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate(); // Régénération de la session pour prévenir le fixation de session
 
-            return redirect()->intended('home')->with('success', 'You are logged in!');
+            return redirect()->intended('/')->with('success', 'You are logged in!');
         }
 
         // Retourner les erreurs si la connexion échoue

@@ -292,6 +292,7 @@ aria-label="submenu">
 @endif
 
 {{------------------------------------user reservation start-------------------------------------------------------------------}}
+@if (!Auth::user()->hasRole('admin'))
 
 <li class="relative px-2 py-1" x-data="{ Open : false  }">
     <div class="inline-flex items-center justify-between w-full text-base font-semibold transition-colors duration-150 text-gray-500  hover:text-yellow-400 cursor-pointer"
@@ -343,5 +344,6 @@ aria-label="submenu">
     
     </div>
     </li>
+    @endif
 
 </ul>
